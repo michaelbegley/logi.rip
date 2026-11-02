@@ -2,16 +2,16 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-8dijY0vU2G7lej9uUR5dNFywMJoRKLpW21hfJXwL0oY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://app.kit.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-NvlGxEZQD5WqOqe+Fd3qw7oLhOCnMj7oxjk5DyGnJpo='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://app.kit.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>RIPLOGI</title>
-<meta name="description" content="Sign up for RIPLOGI updates.">
+<title>RIP LOGISTICS</title>
+<meta name="description" content="Sign up for RIP LOGISTICS updates.">
 <meta name="theme-color" content="#FFFFFF">
 <link rel="canonical" href="https://logi.rip/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="RIPLOGI">
-<meta property="og:title" content="RIPLOGI">
+<meta property="og:site_name" content="RIP LOGISTICS">
+<meta property="og:title" content="RIP LOGISTICS">
 <meta property="og:description" content="Sign up for updates.">
 <meta property="og:url" content="https://logi.rip/">
 <meta property="og:image" content="https://logi.rip/og.png">
@@ -19,8 +19,8 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="RIPLOGI logo">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="/favicon.ico" sizes="48x48">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" href="/audio/impact.mp3" as="fetch" crossorigin>
 <link rel="preload" href="/audio/door.mp3" as="fetch" crossorigin>
@@ -58,13 +58,14 @@ header>*{pointer-events:auto}
 .track{position:relative;display:block;width:52px;height:30px;border-radius:999px;border:1.5px solid var(--track-border);background:var(--track-bg);transition:background-color .25s ease,border-color .25s ease}
 .knob{position:absolute;top:2.5px;left:var(--knob-left);width:22px;height:22px;border-radius:999px;background:var(--knob);transition:left .25s ease}
 main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:25.5px;padding-block:96px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));text-align:center}
-.pan,.drop,.squash,.zoom{display:block;width:100%;will-change:transform}
+.pan,.drop,.squash,.zoom{display:block;width:100%}
+.js.intro .pan,.js.intro .drop,.js.intro .zoom,.js.intro .word-box{will-change:transform}  /* only while it moves: a layer kept afterwards stays drawn at its zoomed-in size and shrunk, which looks jagged */
 .stage{display:flex;justify-content:center;width:100%}
 .lockup{position:relative;width:min(620px,100%);max-width:100%;aspect-ratio:3844.40 / 729.45;margin:0 auto}
-.icon-box{position:absolute;left:0;top:0.0000%;width:14.8496%}
+.icon-box{position:absolute;left:0;top:0.0000%;width:14.8496%;z-index:1}
 .icon{display:block;width:100%;height:auto;overflow:visible}
-.word-window{position:absolute;left:16.1424%;top:0;width:83.8576%;height:100%;overflow:hidden}
-.word-box{position:absolute;left:7.0230%;top:14.8626%;width:92.9770%;aspect-ratio:WORD_3844.40 / 729.45;will-change:transform}
+.word-window{position:absolute;left:7.4248%;top:0;width:92.5752%;height:100%;overflow:hidden}
+.word-box{position:absolute;left:15.7784%;top:14.8626%;width:84.2216%;aspect-ratio:WORD_3844.40 / 729.45}
 .word{display:block;width:100%;height:auto}
 .i{fill:var(--fg)}.c{fill:var(--bg)}
 .i,.c{transition:fill .3s ease}
@@ -322,7 +323,7 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     // The reveal: one steady motion, timed to the door's slide, stopping dead on the clank. The camera pulls
     // back at a constant rate (the scale falls by the same factor every frame), the stone glides left at a
     // constant speed, and the name slides out from behind it so its visible part grows at a constant speed.
-    var ex = -xs / S0, ey = -ys / S0, HIDE = parseFloat('-109.55%'), zoomKeys = [], wordKeys = [];
+    var ex = -xs / S0, ey = -ys / S0, HIDE = parseFloat('-111.66%'), zoomKeys = [], wordKeys = [];
     for (var j = 0; j <= 30; j++) {
       var v = j / 30, sc = Math.pow(S0, 1 - v), fr = v * Math.pow(S0, v - 1);
       zoomKeys.push({ transform: 'translate(' + (ex * (v - sc)).toFixed(2) + 'px,' + (ey * (v - sc)).toFixed(2) + 'px) scale(' + sc.toFixed(4) + ')' });
@@ -330,6 +331,9 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     }
     A(zoom, zoomKeys, { delay: ms(T.zoom), duration: (T.lock - T.zoom) * 1000, easing: 'linear' });
     A(word, wordKeys, { delay: ms(T.slide), duration: (T.lock - T.slide) * 1000, easing: 'linear' });
+    // Once the zoom is over, the logo stops being a separate layer, so it is drawn again, sharp, at its real size
+    // (kept as a layer, it stays a shrunk copy of the zoomed-in picture, which looks jagged on 1x screens).
+    setTimeout(function () { [drop, zoom, word].forEach(function (el) { el.style.willChange = 'auto'; }); }, ms(T.lock + 0.12));
     var shake = function (at, amp, dur) {
       A(mainEl, [0, 1, -1, .8, -.6, .4, -.2, 0].map(function (k, i) { return { transform: 'translate(' + (k * amp) + 'px,' + (i % 2 ? -k * amp * .6 : k * amp * .6) + 'px)' }; }),
         { delay: ms(at), duration: dur, easing: 'linear', fill: 'none' });
