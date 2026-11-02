@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-ZW4uP5vfvn0VDGHcaFbHC+zpJUUQKeSu/+F2c1RrRAk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://app.kit.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-8dijY0vU2G7lej9uUR5dNFywMJoRKLpW21hfJXwL0oY='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://app.kit.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RIPLOGI</title>
@@ -171,7 +171,7 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
         return new Promise(function (res, rej) { ctx.decodeAudioData(b, res, rej); });
       }).then(function (buf) { buffers[n] = buf; }).catch(function () {});
     });
-    music = new Audio('audio/submerged.mp3'); music.loop = true; music.preload = 'auto';
+    music = new Audio(MUSIC_SRC); music.loop = true; music.preload = 'auto';
     try { var s = ctx.createMediaElementSource(music); musicGain = ctx.createGain(); musicGain.gain.value = 0; s.connect(musicGain); musicGain.connect(master); } catch (e) { musicGain = null; }
   }
   var shots = [];                              // the effects scheduled and not yet finished
@@ -188,6 +188,7 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     try { param.cancelScheduledValues(t); param.setValueAtTime(f, t); param.setValueCurveAtTime(c, t + 0.005, dur); }
     catch (e) { try { param.setTargetAtTime(to, t, dur / 3); } catch (e2) { param.value = to; } }
   }
+  var MUSIC_SRC = 'audio/submerged.mp3', musicPos = 0, released = false;
   var MUSIC = 0.6, MUSIC_IN = 4;               // music level, and how long it takes to fade on (s); it loops forever
   var away = false, musicPending = false, leaveTimer = null;
   function startMusic() {
@@ -213,9 +214,27 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     if (music) { var p = music.play(); musicUnlocked = (p && p.then ? p : Promise.resolve()).then(function () { if (!musicStarted) music.pause(); }).catch(function () {}); }
     return Promise.race([resumed.catch(function () {}), new Promise(function (r) { setTimeout(r, 400); })]);
   }
-  function pauseMusic() { if (music && !music.paused) { try { music.pause(); } catch (e) {} } }
+  // Stopping lets go of the song completely (not just a pause), so a phone's "now playing" (the Dynamic Island,
+  // the lock screen) has nothing left to show. Coming back loads it again from the same moment.
+  function pauseMusic() {
+    if (!music || released) return;
+    try { musicPos = music.currentTime || 0; } catch (e) {}
+    try { music.pause(); } catch (e) {}
+    if (!musicStarted) return;
+    try { music.removeAttribute('src'); music.load(); released = true; } catch (e) {}
+    try { if (navigator.mediaSession) navigator.mediaSession.playbackState = 'none'; } catch (e) {}
+  }
+  function reloadMusic() {
+    if (!music || !released) return;
+    released = false;
+    music.src = MUSIC_SRC;
+    try { music.currentTime = musicPos; } catch (e) {}
+    var seek = function () { try { if (Math.abs(music.currentTime - musicPos) > 0.5) music.currentTime = musicPos; } catch (e) {} music.removeEventListener('loadedmetadata', seek); };
+    music.addEventListener('loadedmetadata', seek);
+  }
   function resumeMusic() {
     if (!music || !musicStarted || !soundOn || away) return;
+    reloadMusic();
     var p = music.play();
     if (p && p.catch) p.catch(function () {      // some phones want a tap before playing again
       document.addEventListener('pointerdown', function () {
