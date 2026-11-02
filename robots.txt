@@ -1,0 +1,23 @@
+# logi.rip robots.txt (1 Nov 2026)
+# Every bot not named below is welcome: search engines (Google, Bing, Apple, DuckDuckGo, Brave),
+# AI answer and agent bots (ChatGPT, Claude, Perplexity, Meta AI), AI training crawlers
+# (GPTBot, ClaudeBot, Google-Extended, Meta, Common Crawl) and link-preview bots (Facebook, Instagram, X).
+
+User-agent: *
+Allow: /
+
+# Scrapers and SEO tools that send nothing back
+User-agent: Bytespider
+User-agent: Reflectionbot
+User-agent: ElevenlabsCrawler
+User-agent: AionBot
+User-agent: TokenFoundryBot
+User-agent: AwarioBot
+User-agent: QlyzeBot
+User-agent: Barkrowler
+User-agent: SERankingBacklinksBot
+User-agent: SenderBot
+User-agent: TernCrawler
+User-agent: SQLSpider
+User-agent: SpiderLing
+Disallow: /
