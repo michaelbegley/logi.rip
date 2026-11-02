@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-W+i2TK/b1O+p5C1G5XVUPtROEwVMOxDEKhwFXZ52Oc4='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://app.kit.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-ZW4uP5vfvn0VDGHcaFbHC+zpJUUQKeSu/+F2c1RrRAk='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://app.kit.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RIPLOGI</title>
@@ -35,11 +35,11 @@
 html,body{margin:0;background:var(--bg);color:var(--fg)}
 body{font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s ease,color .3s ease;overflow-x:hidden}
 .page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;position:relative}
-header{position:absolute;top:0;left:0;right:0;display:flex;justify-content:flex-end;gap:2px;align-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) 0 max(20px,env(safe-area-inset-left,0px));z-index:2;pointer-events:none}
+header{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) 0 max(20px,env(safe-area-inset-left,0px));z-index:2;pointer-events:none}
 header>*{pointer-events:auto}
 .switch,.sound{display:inline-flex;align-items:center;justify-content:center;min-width:64px;min-height:44px;padding:0;border:0;border-radius:999px;background:transparent;color:var(--fg);cursor:pointer;-webkit-tap-highlight-color:transparent;visibility:hidden}
 .js .switch,.js .sound{visibility:visible}
-.sound{min-width:44px}
+.sound{min-width:44px;margin-left:-7.33px}  /* mirrors the switch: the speaker sits 26 px from the left edge, as the track does from the right */
 .sound svg{width:26px;height:26px;display:block}
 .sound .slash,.sound .gap{stroke-dasharray:1 2;stroke-dashoffset:1}
 .sound .gap{stroke:var(--bg);stroke-width:4.6;transition:stroke .3s ease}
@@ -84,6 +84,7 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
 .done{margin:0;min-height:50px;display:flex;align-items:center;font-size:18px;font-weight:500;outline:none}
 .gate{position:fixed;inset:0;z-index:5;display:none;place-items:center;background:var(--bg);cursor:pointer}
 .js.intro .gate{display:grid}
+.enter.inv{background:var(--fg);color:var(--bg)}
 .enter{font:inherit;font-size:13px;font-weight:500;letter-spacing:.34em;text-indent:.34em;text-transform:uppercase;color:var(--fg);background:transparent;border:1.5px solid var(--fg);border-radius:999px;padding:14px 26px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .js.intro .drop,.js.intro .lead,.js.intro .row,.js.intro header,.js.intro .foot{opacity:0}
 .js.intro .page{overflow:hidden}
@@ -128,10 +129,10 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
 </main>
 <footer class="foot">
 <a class="ig l" href="https://www.instagram.com/ripresale/" target="_blank" rel="noopener noreferrer" aria-label="@ripresale on Instagram"><svg viewBox="0 0 256 256" aria-hidden="true" focusable="false"><path fill="currentColor" d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,72a24,24,0,1,1,24-24A24,24,0,0,1,128,152ZM176,20H80A60.07,60.07,0,0,0,20,80v96a60.07,60.07,0,0,0,60,60h96a60.07,60.07,0,0,0,60-60V80A60.07,60.07,0,0,0,176,20Zm36,156a36,36,0,0,1-36,36H80a36,36,0,0,1-36-36V80A36,36,0,0,1,80,44h96a36,36,0,0,1,36,36ZM196,76a16,16,0,1,1-16-16A16,16,0,0,1,196,76Z"/></svg><span>@ripresale</span></a>
-<span class="sl" aria-hidden="true">/</span>
+<span class="sl" aria-hidden="true">|</span>
 <a class="ig r" href="https://www.instagram.com/logi.rip/" target="_blank" rel="noopener noreferrer" aria-label="@logi.rip on Instagram"><svg viewBox="0 0 256 256" aria-hidden="true" focusable="false"><path fill="currentColor" d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,72a24,24,0,1,1,24-24A24,24,0,0,1,128,152ZM176,20H80A60.07,60.07,0,0,0,20,80v96a60.07,60.07,0,0,0,60,60h96a60.07,60.07,0,0,0,60-60V80A60.07,60.07,0,0,0,176,20Zm36,156a36,36,0,0,1-36,36H80a36,36,0,0,1-36-36V80A36,36,0,0,1,80,44h96a36,36,0,0,1,36,36ZM196,76a16,16,0,1,1-16-16A16,16,0,0,1,196,76Z"/></svg><span>@logi.rip</span></a>
 <span class="legal l">&copy; 2026 <a href="https://resale.rip/">RIP RESALE</a></span>
-<span class="sl" aria-hidden="true">/</span>
+<span class="sl" aria-hidden="true">|</span>
 <span class="legal r"><a href="https://logi.rip/">RIP LOGISTICS</a></span>
 </footer>
 </div>
@@ -329,6 +330,60 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
       anims.forEach(function (a) { try { a.cancel(); } catch (e) {} });
     }, ms(T.chrome + T.chromeDur + 0.1));
   }
+  // ---- Enter Site turns to dust: the pill (in the reverse colours) breaks into specks that blow away ----
+  function dust(btn) {
+    var r = btn.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var padR = 170, padU = 90, W = r.width + padR, H = r.height + padU, cv = document.createElement('canvas');
+    cv.width = Math.ceil(W * dpr); cv.height = Math.ceil(H * dpr);
+    cv.setAttribute('aria-hidden', 'true');
+    cv.style.cssText = 'position:fixed;left:' + r.left + 'px;top:' + (r.top - padU) + 'px;width:' + W + 'px;height:' + H + 'px;z-index:6;pointer-events:none';
+    var c = cv.getContext('2d');
+    if (!c) { btn.style.visibility = 'hidden'; return; }
+    var ink = getComputedStyle(root).getPropertyValue('--fg').trim() || '#000';
+    c.scale(dpr, dpr);
+    // the pill, then the letters cut out of it (as on the flipped button)
+    var w = r.width, h = r.height, rad = h / 2;
+    c.fillStyle = ink; c.beginPath();
+    c.moveTo(rad, padU); c.lineTo(w - rad, padU); c.arc(w - rad, padU + rad, rad, -Math.PI / 2, Math.PI / 2);
+    c.lineTo(rad, padU + h); c.arc(rad, padU + rad, rad, Math.PI / 2, Math.PI * 1.5); c.closePath(); c.fill();
+    var label = 'ENTER SITE', fs = 13, sp = 0.34 * fs, cs = getComputedStyle(btn);
+    c.font = '500 ' + fs + 'px ' + cs.fontFamily; c.textBaseline = 'middle'; c.globalCompositeOperation = 'destination-out';
+    var widths = label.split('').map(function (ch) { return c.measureText(ch).width; });
+    var total = widths.reduce(function (a, b) { return a + b; }, 0) + sp * (label.length - 1);
+    var x = (w - total) / 2;
+    label.split('').forEach(function (ch, i) { c.fillText(ch, x, padU + h / 2 + 0.5); x += widths[i] + sp; });
+    c.globalCompositeOperation = 'source-over';
+    // every few pixels of the pill becomes a speck
+    var step = Math.max(2, Math.round(dpr * 1.5)), img = c.getImageData(0, Math.round(padU * dpr), Math.round(w * dpr), Math.round(h * dpr)).data;
+    var iw = Math.round(w * dpr), ih = Math.round(h * dpr), P = [];
+    for (var yy = 0; yy < ih; yy += step) for (var xx = 0; xx < iw; xx += step) {
+      if (img[(yy * iw + xx) * 4 + 3] < 128) continue;
+      var px = xx / dpr, py = yy / dpr + padU;
+      P.push({ x: px, y: py, x0: px, y0: py, s: step / dpr,
+        at: (px / w) * 230 + Math.random() * 70,                 // the left edge goes first, like wind from the left
+        vx: 0.10 + Math.random() * 0.24, vy: -(0.015 + Math.random() * 0.11), life: 360 + Math.random() * 260, ph: Math.random() * 6.3 });
+    }
+    document.body.appendChild(cv);
+    btn.style.visibility = 'hidden';
+    var t0 = performance.now();
+    (function frame(now) {
+      var t = now - t0, live = 0;
+      c.clearRect(0, 0, W, H); c.fillStyle = ink;
+      for (var i = 0; i < P.length; i++) {
+        var p = P[i], age = t - p.at;
+        if (age < 0) { c.globalAlpha = 1; c.fillRect(p.x0, p.y0, p.s, p.s); live++; continue; }
+        if (age > p.life) continue;
+        var k = age / p.life;
+        p.x = p.x0 + p.vx * age + Math.sin(age / 90 + p.ph) * 1.6;
+        p.y = p.y0 + p.vy * age - 0.00006 * age * age;
+        c.globalAlpha = 1 - Math.pow(k, 1.4);
+        var sz = p.s * (1 - 0.55 * k);
+        c.fillRect(p.x, p.y, sz, sz); live++;
+      }
+      c.globalAlpha = 1;
+      if (live && t < 1600) requestAnimationFrame(frame); else if (cv.parentNode) cv.parentNode.removeChild(cv);
+    })(t0);
+  }
   if (!reduce) {
     var gate = $('rl-gate');
     if (!soundOn || !AC || !document.body.animate) {
@@ -339,10 +394,14 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
       var started = false;
       var go = function () {
         if (started) return; started = true;
-        var wait = 0, tick = function () {      // give the two effects up to 1.2 s to finish decoding
+        var ready = unlock();                       // inside the tap: this is what lets the sound play
+        var btn = $('rl-enter');
+        btn.classList.add('inv');                   // the button flips to the reverse colours...
+        setTimeout(function () { try { dust(btn); } catch (e) { btn.style.visibility = 'hidden'; } }, 90);   // ...then blows away as dust
+        var wait = 0, tick = function () {          // give the two effects up to 1.2 s to finish decoding
           if ((buffers.impact && buffers.door) || wait > 1200) run(false); else { wait += 60; setTimeout(tick, 60); }
         };
-        unlock().then(tick);
+        Promise.all([ready, new Promise(function (r) { setTimeout(r, 380); })]).then(tick);   // the intro starts as the dust clears
       };
       gate.addEventListener('click', go);
       // the Enter or Space key also enters (without focusing the button on load, which drew a second ring around it)
