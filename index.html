@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-LN2UynO+hhQ2i0L/CV9uVaaWe0W986FnqJbgeYN424Y=' 'sha256-wQ2sYP4QXJa9d1jqgeDOCt35XF78GsCl7qhAxA6kzVo=' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ripresale.goatcounter.com; connect-src 'self' https://app.kit.com https://ripresale.goatcounter.com https://cloudflareinsights.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-AcXf5YSeF9glicyfuvj/Du7zN1XZpMdn6x1BrUrvOsg=' 'sha256-wQ2sYP4QXJa9d1jqgeDOCt35XF78GsCl7qhAxA6kzVo=' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ripresale.goatcounter.com; connect-src 'self' https://app.kit.com https://ripresale.goatcounter.com https://cloudflareinsights.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RIP LOGISTICS</title>
@@ -455,6 +455,8 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
         form.hidden = true;
         done.hidden = false;
         done.focus();
+        // Count the sign-up as a GoatCounter event. It says that someone signed up; the email address is not sent.
+        try { if (window.goatcounter && window.goatcounter.count) window.goatcounter.count({ path: location.host + '/signup', title: 'Email sign-up', event: true }); } catch (x) {}
       })
       .catch(function () {
         err.textContent = 'Something went wrong. Try again.';
