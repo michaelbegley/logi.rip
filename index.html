@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-NvlGxEZQD5WqOqe+Fd3qw7oLhOCnMj7oxjk5DyGnJpo=' 'sha256-wQ2sYP4QXJa9d1jqgeDOCt35XF78GsCl7qhAxA6kzVo=' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ripresale.goatcounter.com; connect-src 'self' https://app.kit.com https://ripresale.goatcounter.com https://cloudflareinsights.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-l8vMUfvWhB/I/fQwa2GQEXNekq5w0I0QrCbbZ+ExAiw=' 'sha256-wQ2sYP4QXJa9d1jqgeDOCt35XF78GsCl7qhAxA6kzVo=' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ripresale.goatcounter.com; connect-src 'self' https://app.kit.com https://ripresale.goatcounter.com https://cloudflareinsights.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RIP LOGISTICS</title>
@@ -156,12 +156,12 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     try { localStorage.setItem('rl-theme', t); } catch (e) {}
   });
 
-  // ---- sound: two effects (decoded up front, scheduled to the millisecond) and the music (streamed) ----
+  // ---- sound: two effects (decoded up front, scheduled to the millisecond) and the music (decoded once, looped from memory) ----
   var soundOn = true;
   try { soundOn = localStorage.getItem('rl-sound') !== 'off'; } catch (e) {}
   soundBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
   var AC = window.AudioContext || window.webkitAudioContext;
-  var ctx = null, master = null, musicGain = null, music = null, buffers = {}, musicUnlocked = null, musicStarted = false;
+  var ctx = null, master = null, musicGain = null, musicBuf = null, musicSrc = null, musicLoad = null, buffers = {}, musicStarted = false;
   var HIT = 0.028, CLANK = 1.30;             // where the boom hits and the door locks, inside each file (s); the door starts sliding 1.08 s before its clank
   function initAudio() {
     if (ctx || !AC) return;
@@ -172,8 +172,9 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
         return new Promise(function (res, rej) { ctx.decodeAudioData(b, res, rej); });
       }).then(function (buf) { buffers[n] = buf; }).catch(function () {});
     });
-    music = new Audio(MUSIC_SRC); music.loop = true; music.preload = 'auto';
-    try { var s = ctx.createMediaElementSource(music); musicGain = ctx.createGain(); musicGain.gain.value = 0; s.connect(musicGain); musicGain.connect(master); } catch (e) { musicGain = null; }
+    musicGain = ctx.createGain(); musicGain.gain.value = 0; musicGain.connect(master);
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}   // iPhone: the sound still plays with the ring switch on silent, as it did when the song was an <audio> element
+    loadMusic();
   }
   var shots = [];                              // the effects scheduled and not yet finished
   function playAt(name, when) {
@@ -189,22 +190,38 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     try { param.cancelScheduledValues(t); param.setValueAtTime(f, t); param.setValueCurveAtTime(c, t + 0.005, dur); }
     catch (e) { try { param.setTargetAtTime(to, t, dur / 3); } catch (e2) { param.value = to; } }
   }
-  var MUSIC_SRC = 'audio/submerged.mp3', musicPos = 0, released = false;
+  var MUSIC_SRC = 'audio/submerged-loop.mp3', musicPos = 0, musicT0 = 0, musicUp = false;
+  var LOOP_AT = 0.5, LOOP_LEN = 8252 / 300;    // the loop inside that file (s): it starts half a second in and lasts 27.5 s
   var MUSIC = 0.6, MUSIC_IN = 4;               // music level, and how long it takes to fade on (s); it loops forever
   var away = false, musicPending = false, leaveTimer = null;
+  // The music is a 27.5 s loop cut from submerged.mp3 (39.95 s to 67.46 s, its end crossfaded into its start over 2 s).
+  // It is decoded once and looped from memory, the same way the two effects play. It used to be the whole song in an
+  // <audio> element piped into Web Audio (createMediaElementSource); iPhones chop that pipe up into clicks.
+  // The file carries half a second extra at each end, a copy of the loop's other end, so whatever padding a browser's
+  // MP3 decoder leaves in, the stretch from LOOP_AT to LOOP_AT + LOOP_LEN joins up with no gap.
+  function loadMusic() {
+    if (musicLoad || !ctx) return musicLoad;
+    musicLoad = fetch(MUSIC_SRC).then(function (r) { return r.arrayBuffer(); }).then(function (b) {
+      return new Promise(function (res, rej) { ctx.decodeAudioData(b, res, rej); });
+    }).then(function (buf) { musicBuf = buf; });
+    musicLoad.catch(function () { musicLoad = null; });   // it didn't load: the next start tries again
+    return musicLoad;
+  }
+  function playMusic(from) {                   // from: where in the loop to start (s)
+    if (!musicBuf || musicSrc) return;
+    var s = ctx.createBufferSource(); s.buffer = musicBuf; s.loop = true; s.loopStart = LOOP_AT; s.loopEnd = LOOP_AT + LOOP_LEN; s.connect(musicGain);
+    musicPos = from % LOOP_LEN; musicT0 = ctx.currentTime - musicPos;
+    try { s.start(0, LOOP_AT + musicPos); musicSrc = s; } catch (e) { return; }
+    if (!musicUp) { musicUp = true; fadeTo(musicGain.gain, MUSIC, MUSIC_IN, 0); }   // the first time, it fades on
+  }
   function startMusic() {
-    if (!music || musicStarted) return;
+    if (!ctx || musicStarted) return;
     if (away) { musicPending = true; return; } // the visitor has left: it starts when they come back
+    var p = loadMusic();
+    if (!p) return;
     musicStarted = true;
-    (musicUnlocked || Promise.resolve()).then(function () {
-      try { music.currentTime = 0; } catch (e) {}
-      var p = music.play(); if (p && p.catch) p.catch(function () { musicStarted = false; });
-      if (musicGain) { fadeTo(musicGain.gain, MUSIC, MUSIC_IN, 0); }
-      else {                                   // no Web Audio: step the element's own volume up instead
-        var k = 0, steps = MUSIC_IN * 20; music.volume = 0;
-        var iv = setInterval(function () { k++; try { music.volume = MUSIC * Math.pow(Math.min(1, k / steps), 2); } catch (e) {} if (k >= steps) clearInterval(iv); }, 50);
-      }
-    });
+    p.then(function () { if (soundOn && !away) playMusic(0); },   // muted or gone by the time it loaded: resumeMusic starts it
+      function () { musicStarted = false; });
   }
   function unlock() {                          // must run inside the tap; resolves once the audio clock is running
     initAudio();
@@ -212,38 +229,24 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     var resumed = Promise.resolve();
     try { resumed = ctx.resume() || resumed; } catch (e) {}
     try { var b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); } catch (e) {}
-    if (music) { var p = music.play(); musicUnlocked = (p && p.then ? p : Promise.resolve()).then(function () { if (!musicStarted) music.pause(); }).catch(function () {}); }
     return Promise.race([resumed.catch(function () {}), new Promise(function (r) { setTimeout(r, 400); })]);
   }
-  // Stopping lets go of the song completely (not just a pause), so a phone's "now playing" (the Dynamic Island,
-  // the lock screen) has nothing left to show. Coming back loads it again from the same moment.
+  // Stopping takes the song off the output and remembers the moment; coming back carries on from there.
+  // (There is no <audio> element any more, so a phone's "now playing" has nothing to show.)
   function pauseMusic() {
-    if (!music || released) return;
-    try { musicPos = music.currentTime || 0; } catch (e) {}
-    try { music.pause(); } catch (e) {}
-    if (!musicStarted) return;
-    try { music.removeAttribute('src'); music.load(); released = true; } catch (e) {}
-    try { if (navigator.mediaSession) navigator.mediaSession.playbackState = 'none'; } catch (e) {}
-  }
-  function reloadMusic() {
-    if (!music || !released) return;
-    released = false;
-    music.src = MUSIC_SRC;
-    try { music.currentTime = musicPos; } catch (e) {}
-    var seek = function () { try { if (Math.abs(music.currentTime - musicPos) > 0.5) music.currentTime = musicPos; } catch (e) {} music.removeEventListener('loadedmetadata', seek); };
-    music.addEventListener('loadedmetadata', seek);
+    if (!musicSrc) return;
+    musicPos = (ctx.currentTime - musicT0) % LOOP_LEN;
+    try { musicSrc.stop(); } catch (e) {}
+    try { musicSrc.disconnect(); } catch (e) {}
+    musicSrc = null;
   }
   function resumeMusic() {
-    if (!music || !musicStarted || !soundOn || away) return;
-    reloadMusic();
-    var p = music.play();
-    if (p && p.catch) p.catch(function () {      // some phones want a tap before playing again
-      document.addEventListener('pointerdown', function () {
-        if (away || !soundOn) return;
-        try { var r = ctx && ctx.resume(); if (r && r.catch) r.catch(function () {}); } catch (e) {}
-        var q = music.play(); if (q && q.catch) q.catch(function () {});
-      }, { once: true });
-    });
+    if (!ctx || !musicStarted || !soundOn || away) return;
+    playMusic(musicPos);
+    document.addEventListener('pointerdown', function () {     // some phones want a tap before the sound comes back
+      if (away || !soundOn || ctx.state === 'running') return;
+      try { var r = ctx.resume(); if (r && r.catch) r.catch(function () {}); } catch (e) {}
+    }, { once: true });
   }
   soundBtn.addEventListener('click', function () {
     soundBtn.classList.add('anim');
@@ -252,7 +255,11 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     try { localStorage.setItem('rl-sound', soundOn ? 'on' : 'off'); } catch (e) {}
     if (soundOn) { unlock(); if (root.className.indexOf('intro') < 0) { if (musicStarted) resumeMusic(); else startMusic(); } }
     if (master) fadeTo(master.gain, soundOn ? 1 : 0, soundOn ? 1.6 : 0.35);
-    if (!soundOn) setTimeout(function () { if (!soundOn) pauseMusic(); }, 400);   // muted: the song stops, it doesn't run silently
+    if (!soundOn) setTimeout(function () {         // muted: the song stops, and so does the audio clock, unless an effect is still playing
+      if (soundOn) return;
+      pauseMusic();
+      try { if (ctx && !shots.length) { var r = ctx.suspend(); if (r && r.catch) r.catch(function () {}); } } catch (e) {}
+    }, 400);
   });
 
   // ---- leaving the page stops the sound; coming back fades it on again ----
