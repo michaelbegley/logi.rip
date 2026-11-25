@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-l8vMUfvWhB/I/fQwa2GQEXNekq5w0I0QrCbbZ+ExAiw=' 'sha256-wQ2sYP4QXJa9d1jqgeDOCt35XF78GsCl7qhAxA6kzVo=' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ripresale.goatcounter.com; connect-src 'self' https://app.kit.com https://ripresale.goatcounter.com https://cloudflareinsights.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-aJ2NeZzKOzLnFahWEL8Ir0wWnq7qzb4tsPfjK3V7rAo=' 'sha256-LN2UynO+hhQ2i0L/CV9uVaaWe0W986FnqJbgeYN424Y=' 'sha256-wQ2sYP4QXJa9d1jqgeDOCt35XF78GsCl7qhAxA6kzVo=' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://ripresale.goatcounter.com; connect-src 'self' https://app.kit.com https://ripresale.goatcounter.com https://cloudflareinsights.com; form-action https://app.kit.com; base-uri 'none'; object-src 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>RIP LOGISTICS</title>
@@ -22,7 +22,7 @@
 <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preload" href="/audio/impact.mp3" as="fetch" crossorigin>
+<link rel="preload" href="/audio/whoosh.mp3" as="fetch" crossorigin>
 <link rel="preload" href="/audio/door.mp3" as="fetch" crossorigin>
 <script>
 (function(){var r=document.documentElement,t=r.getAttribute('data-theme')==='dark'?'dark':'light';try{var s=localStorage.getItem('rl-theme');if(s==='dark'||s==='light')t=s;}catch(e){}r.setAttribute('data-theme',t);var c=' js';try{if(!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))c+=' intro';}catch(e){c+=' intro';}r.className+=c;})();
@@ -162,12 +162,12 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
   soundBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
   var AC = window.AudioContext || window.webkitAudioContext;
   var ctx = null, master = null, musicGain = null, musicBuf = null, musicSrc = null, musicLoad = null, buffers = {}, musicStarted = false;
-  var HIT = 0.028, CLANK = 1.30;             // where the boom hits and the door locks, inside each file (s); the door starts sliding 1.08 s before its clank
+  var HIT = 0.40, CLANK = 1.30;              // where the whoosh reaches full strength and the door locks, inside each file (s); the door starts sliding 1.08 s before its clank
   function initAudio() {
     if (ctx || !AC) return;
     try { ctx = new AC(); } catch (e) { ctx = null; return; }
     master = ctx.createGain(); master.gain.value = soundOn ? 1 : 0; master.connect(ctx.destination);
-    ['impact', 'door'].forEach(function (n) {
+    ['whoosh', 'door'].forEach(function (n) {
       fetch('audio/' + n + '.mp3').then(function (r) { return r.arrayBuffer(); }).then(function (b) {
         return new Promise(function (res, rej) { ctx.decodeAudioData(b, res, rej); });
       }).then(function (buf) { buffers[n] = buf; }).catch(function () {});
@@ -194,7 +194,7 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
   var LOOP_AT = 0.5, LOOP_LEN = 8252 / 300;    // the loop inside that file (s): it starts half a second in and lasts 27.5 s
   var MUSIC = 0.6, MUSIC_IN = 4;               // music level, and how long it takes to fade on (s); it loops forever
   var away = false, musicPending = false, leaveTimer = null;
-  // The music is a 27.5 s loop cut from submerged.mp3 (39.95 s to 67.46 s, its end crossfaded into its start over 2 s).
+  // The music is a 27.5 s loop cut from the song Submerged (39.95 s to 67.46 s of it, its end crossfaded into its start over 2 s).
   // It is decoded once and looped from memory, the same way the two effects play. It used to be the whole song in an
   // <audio> element piped into Web Audio (createMediaElementSource); iPhones chop that pipe up into clicks.
   // The file carries half a second extra at each end, a copy of the loop's other end, so whatever padding a browser's
@@ -306,7 +306,7 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     var lead = 0.06 + (ctx && ctx.outputLatency ? ctx.outputLatency : 0);
     if (!silent && ctx) {
       var a0 = ctx.currentTime + 0.06;
-      playAt('impact', a0 + T.impact - HIT);
+      playAt('whoosh', a0 + T.impact - HIT);
       playAt('door', a0 + T.lock - CLANK);
     }
     var ms = function (s) { return (s + lead) * 1000; };
@@ -316,7 +316,7 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
     A(pan, [{ transform: 'translateY(' + dy + 'px)' }, { transform: 'translateY(0px)' }], { delay: ms(T.pan), duration: T.panDur * 1000, easing: 'cubic-bezier(.45,0,.2,1)' });
     // The fall, seen from a camera on the ceiling: the logo drops away from the lens onto the floor.
     // Its size on screen is (floor distance / its distance from the lens). It's thrown down, so it is already
-    // moving fast and speeds up: 99% of the drop is over in a flash and it hits with the boom (T.impact).
+    // moving fast and speeds up: 99% of the drop is over in a flash and it lands as the whoosh reaches full strength (T.impact).
     // Then it slows into place over the last 1% (SETTLE seconds).
     var FALL_START = 3.2, LAST = 1.012, SETTLE = 0.26, FAST = T.impact - T.fall, total = FAST + SETTLE, fallKeys = [];
     var rho = 1 / FALL_START, rhoEnd = 1 / LAST;
@@ -429,7 +429,7 @@ input:focus{outline:2px solid var(--fg);outline-offset:3px}
         btn.classList.add('inv');                   // the button flips to the reverse colours...
         setTimeout(function () { try { dust(btn); } catch (e) { btn.style.visibility = 'hidden'; } }, 90);   // ...then blows away as dust
         var wait = 0, tick = function () {          // give the two effects up to 1.2 s to finish decoding
-          if ((buffers.impact && buffers.door) || wait > 1200) run(false); else { wait += 60; setTimeout(tick, 60); }
+          if ((buffers.whoosh && buffers.door) || wait > 1200) run(false); else { wait += 60; setTimeout(tick, 60); }
         };
         Promise.all([ready, new Promise(function (r) { setTimeout(r, 380); })]).then(tick);   // the intro starts as the dust clears
       };
